@@ -286,10 +286,10 @@
 <style lang="scss">
 	.gpp-datePicker{
 		position: relative;
-		z-index: 99;
+		z-index: 999;
 		.g-dp-mask{
 			position: fixed;
-			z-index: 100;
+			z-index: 1000;
 			top: 0;
 			right: 0;
 			left: 0;
@@ -305,7 +305,7 @@
 		}
 		.g-dp-content{
 			position: fixed;
-			z-index: 101;
+			z-index: 1001;
 			bottom: 0;
 			right: 0;
 			width: 100%;
