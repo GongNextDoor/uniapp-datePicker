@@ -25,7 +25,6 @@
 </template>
 
 <script>
-	import gppDatePicker from "./gpp-datePicker.js";
 	export default {
 		props: {
 			themeColor:{
@@ -82,12 +81,12 @@
 		methods: {
 			init(){
 				this.getYears();
-				this.getMonth(this.defaultValue);
+				this.getMonths(this.defaultValue);
 				const date = new Date()
 				        for (let i = 1; i <= 31; i++) {
 				            this.days.push(i)
 				        }
-				this.showPicker(this.defaultValue);
+				this.showPickerValue(this.defaultValue);
 			},
 			
 			show(){
@@ -109,10 +108,18 @@
 				});
 			},
 			
+			/**
+			 * picker change时间触发
+			 * @param {Object} e
+			 */
 			wrapperChange(e){
+				console.log(e);
 				let selectedDate = this.years[e.detail.value[0]]+"-"+this.months[e.detail.value[1]]+"-"+this.days[e.detail.value[2]];
-				this.getMonth(selectedDate);
+				this.getMonths(selectedDate);
 			},
+			/**
+			 * 获取年
+			 */
 			getYears(){
 				let startDateArray = this.startDate.split("-");
 				let endDateArray = this.endDate.split("-");
@@ -125,7 +132,11 @@
 				}
 				this.years = newYears;
 			},
-			getMonth(nowDate){
+			/**
+			 * 获取月
+			 * @param {Object} nowDate 当前选中的日期（判断当前年有多少个月）
+			 */
+			getMonths(nowDate){
 				let startDateArray = this.startDate.split("-");
 				let endDateArray = this.endDate.split("-");
 				let nowDateArray = nowDate.split("-");
@@ -135,12 +146,22 @@
 				let endMonth = Number(endDateArray[1]);
 				
 				let newMonths = [];
-				if(startYear != Number(nowDateArray[0])){
-					for(let i=1; i<=12; i++){
+				if(startYear == Number(nowDateArray[0])){
+					if(endYear == Number(nowDateArray[0])){ // 起始末尾年份一样时
+						for(let i=startMonth; i<=endMonth; i++){
+							newMonths.push(i);
+						}
+					}else{
+						for(let i=startMonth; i<=12; i++){
+							newMonths.push(i);
+						}
+					}
+				}else if(endYear == Number(nowDateArray[0])){
+					for(let i=1; i<=endMonth; i++){
 						newMonths.push(i);
 					}
 				}else{
-					for(let i=startMonth; i<=endMonth; i++){
+					for(let i=1; i<=12; i++){
 						newMonths.push(i);
 					}
 				}
@@ -152,7 +173,6 @@
 				let year = data.getFullYear();
 				let month = date.getMonth+1;
 				let day = date.getDay();
-				
 				return year+"-"+this.dateFormate(month)+"-"+this.dateFormate(day);
 			},
 			dateFormate(val){
@@ -161,7 +181,7 @@
 				}
 				return "0"+val;
 			},
-			showPicker(showDate){
+			showPickerValue(showDate){
 				let showArray = [0,0,0];
 				let showDateArray = showDate.split("-");
 				this.years.forEach((el, index) => {
