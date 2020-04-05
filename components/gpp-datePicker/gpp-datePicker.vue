@@ -13,10 +13,10 @@
 						<view class="g-dp-ctt-wp-item" v-for="(item,index) in years" :key="index">{{item}}年</view>
 					</picker-view-column>
 					<picker-view-column>
-						<view class="g-dp-ctt-wp-item" v-for="(item,index) in months" :key="index">{{item}}月</view>
+						<view class="g-dp-ctt-wp-item" v-for="(item,index) in months" :key="index">{{dateFormate(item)}}月</view>
 					</picker-view-column>
 					<picker-view-column>
-						<view class="g-dp-ctt-wp-item" v-for="(item,index) in days" :key="index">{{item}}日</view>
+						<view class="g-dp-ctt-wp-item" v-for="(item,index) in days" :key="index">{{dateFormate(item)}}日</view>
 					</picker-view-column>
 				</picker-view>
 			</view>
