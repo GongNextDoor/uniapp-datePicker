@@ -1,7 +1,7 @@
 <template>
 	<view class="content">
 		<view class="text-area">
-			<gpp-date-picker @onCancel="onCancel" startDate="2009-05-02" defaultValue="2020-04-22">
+			<gpp-date-picker @onCancel="onCancel" @onConfirm="onConfirm" :startDate="startDate" :endDate="endDate" :defaultValue="pickerDate">
 				<text class="title">{{pickerDate}}</text>
 			</gpp-date-picker>
 		</view>
@@ -16,15 +16,17 @@
 		},
 		data() {
 			return {
+				startDate: "2018-05-02",
+				endDate: "2022-09-20",
 				pickerDate: '2020-11-25'
 			}
-		},
-		onLoad() {
-
 		},
 		methods: {
 			onCancel(e){
 				console.log(e);
+			},
+			onConfirm(e){
+				this.pickerDate = e.dateValue;
 			}
 		}
 	}

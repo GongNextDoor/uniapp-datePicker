@@ -80,13 +80,37 @@
 		},
 		methods: {
 			init(){
+				if(this.propsCheck()){
+					return;
+				}
 				this.getYears();
 				this.getMonths(this.defaultValue);
-				const date = new Date()
-				        for (let i = 1; i <= 31; i++) {
-				            this.days.push(i)
-				        }
-				this.showPickerValue(this.defaultValue);
+				this.getDays(this.defaultValue);
+				this.getPickerValue(this.defaultValue);
+			},
+			/**
+			 * props值校验
+			 */
+			propsCheck(){
+				let flag = false;
+				let start = new Date(this.startDate).getTime();
+				let end = new Date(this.endDate).getTime();
+				let now = new Date(this.defaultValue).getTime();
+				
+				if(isNaN(start) || isNaN(end) || isNaN(now)){
+					flag = true;
+				}
+				if(start>end || now>end || now<start){
+					flag = true;
+				}
+				
+				if(flag){
+					uni.showToast({
+						title: "时间选择器参数错误",
+						icon: "none"
+					})
+				}
+				return flag;
 			},
 			
 			show(){
@@ -98,13 +122,15 @@
 			onCancel(){
 				this.pipkerShowFlag = false;
 				this.$emit("onCancel", {
-					dateValue: this.selectedDate
+					dateValue: this.getDateValue(this.selectedValue),
+					dateValueIndex: this.selectedValue
 				});
 			},
 			onConfirm(){
 				this.pipkerShowFlag = false;
 				this.$emit("onConfirm", {
-					dateValue: this.selectedDate
+					dateValue: this.getDateValue(this.selectedValue),
+					dateValueIndex: this.selectedValue
 				});
 			},
 			
@@ -113,9 +139,17 @@
 			 * @param {Object} e
 			 */
 			wrapperChange(e){
-				console.log(e);
-				let selectedDate = this.years[e.detail.value[0]]+"-"+this.months[e.detail.value[1]]+"-"+this.days[e.detail.value[2]];
-				this.getMonths(selectedDate);
+				let detailValue = e.detail.value;
+				let selectedDate = this.years[detailValue[0]]+"-"+this.months[detailValue[1]]+"-"+this.days[detailValue[2]];
+				if(this.selectedValue[0] != detailValue[0]){
+					this.getMonths(selectedDate);
+					selectedDate = this.years[detailValue[0]]+"-"+this.months[detailValue[1]]+"-"+this.days[detailValue[2]];
+					this.getDays(selectedDate);
+				}
+				if(this.selectedValue[1] != detailValue[1]){
+					this.getDays(selectedDate);
+				}
+				this.selectedValue = detailValue;
 			},
 			/**
 			 * 获取年
@@ -147,7 +181,7 @@
 				
 				let newMonths = [];
 				if(startYear == Number(nowDateArray[0])){
-					if(endYear == Number(nowDateArray[0])){ // 起始末尾年份一样时
+					if(endYear == Number(nowDateArray[0])){ // 起始年份,末尾年份一样时
 						for(let i=startMonth; i<=endMonth; i++){
 							newMonths.push(i);
 						}
@@ -167,6 +201,44 @@
 				}
 				this.months = newMonths;
 			},
+			/**
+			 * 获取日
+			 * @param {Object} nowDate 当前选中的日期（判断当前年月有多少个日）
+			 */
+			getDays(nowDate){
+				let startDateArray = this.startDate.split("-");
+				let endDateArray = this.endDate.split("-");
+				let nowDateArray = nowDate.split("-");
+				let startYear = Number(startDateArray[0]);
+				let endYear = Number(endDateArray[0]);
+				let startMonth = Number(startDateArray[1]);
+				let endMonth = Number(endDateArray[1]);
+				let startDay = Number(startDateArray[2]);
+				let endDay = Number(endDateArray[2]);
+				let totalDays=new Date(nowDateArray[0],nowDateArray[1],0).getDate();
+				
+				let newDays = [];
+				if(startYear == Number(nowDateArray[0]) && startMonth == Number(nowDateArray[1])){
+					if(endYear == Number(nowDateArray[0]) && endMonth == Number(nowDateArray[1])){
+						for(let i=startDay; i<=endDay; i++){
+							newDays.push(i);
+						}
+					}else{
+						for(let i=startDay; i<=totalDays; i++){
+							newDays.push(i);
+						}
+					}
+				}else if(endYear == Number(nowDateArray[0]) && endMonth == Number(nowDateArray[1])){
+					for(let i=1; i<=endDay; i++){
+						newDays.push(i);
+					}
+				}else{
+					for(let i=1; i<=totalDays; i++){
+						newDays.push(i);
+					}
+				}
+				this.days = newDays;
+			},
 			
 			getNowDate(){
 				let date = new Data();
@@ -181,7 +253,7 @@
 				}
 				return "0"+val;
 			},
-			showPickerValue(showDate){
+			getPickerValue(showDate){
 				let showArray = [0,0,0];
 				let showDateArray = showDate.split("-");
 				this.years.forEach((el, index) => {
@@ -203,6 +275,9 @@
 					}
 				})
 				this.selectedValue = showArray;
+			},
+			getDateValue(pikerValue){
+				return this.years[pikerValue[0]]+"-"+this.dateFormate(this.months[pikerValue[1]])+"-"+this.dateFormate(this.days[pikerValue[2]]);
 			}
 		}
 	}
