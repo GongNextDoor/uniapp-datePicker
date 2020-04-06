@@ -25,6 +25,13 @@
 </template>
 
 <script>
+	function getNowDate(){
+		let date = new Date();
+		let year = date.getFullYear();
+		let month = date.getMonth()+1;
+		let day = date.getDay();
+		return year+"-"+month+"-"+day;
+	}
 	export default {
 		props: {
 			themeColor:{
@@ -36,7 +43,7 @@
 			defaultValue:{
 				type:String,
 				default(){
-					return this.getNowDate()
+					return getNowDate()
 				}
 			},
 			startDate:{
@@ -240,13 +247,6 @@
 				this.days = newDays;
 			},
 			
-			getNowDate(){
-				let date = new Data();
-				let year = data.getFullYear();
-				let month = date.getMonth+1;
-				let day = date.getDay();
-				return year+"-"+this.dateFormate(month)+"-"+this.dateFormate(day);
-			},
 			dateFormate(val){
 				if(Number(val) > 9){
 					return val;
@@ -274,7 +274,9 @@
 						return false;
 					}
 				})
-				this.selectedValue = showArray;
+				this.$nextTick(() => {
+					this.selectedValue = showArray;
+				})
 			},
 			getDateValue(pikerValue){
 				return this.years[pikerValue[0]]+"-"+this.dateFormate(this.months[pikerValue[1]])+"-"+this.dateFormate(this.days[pikerValue[2]]);
@@ -342,8 +344,8 @@
 		.g-dp-content.show{
 			transform: translateY(0);
 		}
-		uni-picker-view{
-			height: 100%;
+		picker-view-column{
+			height: 480rpx !important;
 		}
 	}
 </style>
